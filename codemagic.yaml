@@ -4,7 +4,7 @@ workflows:
     max_build_duration: 60
 
     environment:
-      xcode: latest   # required dummy (ignore)
+      xcode: latest
 
     scripts:
       - name: Check project files
@@ -12,11 +12,10 @@ workflows:
           echo "Project files:"
           ls -la
 
-      - name: Install Python & dependencies
+      - name: Install dependencies
         script: |
-          python3 --version
           python3 -m pip install --upgrade pip
-          pip3 install aiohttp pyTelegramBotAPI pymongo pytz psutil
+          pip3 install python-telegram-bot==20.7
 
       - name: Give permission to binary
         script: |
