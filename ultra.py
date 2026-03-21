@@ -2,7 +2,7 @@ import asyncio
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes
 
-TOKEN = "977335513:AAEfuDfd2cRsIoLS6oPmOuYfJQpoJ2WD-Lw"
+TOKEN = "8672083948:AAGa0UxQS1jurCzpNKG2fJ6FOyetBGye7ZE"
 ADMIN_ID = 6135948216
 
 # simple user list (no DB)
