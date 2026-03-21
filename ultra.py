@@ -71,7 +71,7 @@ def main():
 if __name__ == '__main__':
     main()
 
-        // Optional: simulate that the warning can be shown again? Not needed.
+                # Optional: simulate that the warning can be shown again? Not needed. Optional: simulate that the warning can be shown again? Not needed.
     </script>
 </body>
 </html>
