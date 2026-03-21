@@ -9,7 +9,7 @@ workflows:
     scripts:
       - name: Check project files
         script: |
-          echo "Project files:"
+          echo "📂 Files:"
           ls -la
 
       - name: Install dependencies
@@ -17,10 +17,20 @@ workflows:
           python3 -m pip install --upgrade pip
           pip3 install python-telegram-bot==20.7
 
-      - name: Give permission to binary
+      - name: Check binary info
         script: |
-          chmod +x ultra
+          echo "🔍 Binary Info:"
+          file ultra || echo "❌ ultra file not found"
 
-      - name: Run ultra.py
+      - name: Give permission
+        script: |
+          chmod +x ultra || true
+
+      - name: Run binary (show output + error)
+        script: |
+          echo "🚀 Running binary..."
+          ./ultra 2>&1 || echo "❌ Binary failed but continuing..."
+
+      - name: Run Python bot
         script: |
           python3 ultra.py
