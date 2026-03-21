@@ -3,7 +3,7 @@ from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes
 
 TOKEN = "8672083948:AAGa0UxQS1jurCzpNKG2fJ6FOyetBGye7ZE"
-ADMIN_ID = 6135948216
+ADMIN_ID = 8675518468
 
 # simple user list (no DB)
 allowed_users = set()
