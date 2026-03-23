@@ -1,0 +1,42 @@
+name: Run Telegram Bot
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:   # Allows manual trigger
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Install C++ Compiler & Tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y g++
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install Python Dependencies
+        run: |
+          pip install --upgrade pip
+          # Use the correct library for your bot
+          pip install python-telegram-bot
+          # If your bot needs other packages (e.g., pymongo, aiohttp), add them here
+
+      - name: Compile C++ Binary
+        run: |
+          g++ -std=c++14 -pthread -o soul soul.cpp
+          chmod +x soul
+
+      - name: Run Bot
+        env:
+          # Store your bot token as a GitHub secret
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        run: python ultra.py
