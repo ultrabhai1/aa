@@ -2,9 +2,6 @@ workflows:
   telegram-bot:
     name: Run Bot with C++11 Program
 
-    environment:
-      docker_image: python:3.10
-
     scripts:
       - echo "ULTRA BHAI BOT START..."
 
@@ -15,18 +12,17 @@ workflows:
       - apt-get install -y g++
 
       # Python setup
-      - pip install --upgrade pip
-      - pip install pyTelegramBotAPI pymongo aiohttp psutil pytz
+      - pip3 install --upgrade pip
+      - pip3 install pyTelegramBotAPI pymongo aiohttp psutil pytz
 
-      # Compile C++ (your command)
-      - echo "Compiling soul.cpp..."
+      # Compile C++
       - g++ -std=c++11 -pthread -o soul soul.cpp
 
       # Permission
       - chmod +x soul
 
-      # Debug check
+      # Debug
       - ls -la
 
-      # Run Python bot
+      # Run bot
       - python3 ultra.py
