@@ -1,36 +1,32 @@
 workflows:
-  ultra_python_runner:
-    name: Ultra Python Runner
-    max_build_duration: 60
+  telegram-bot:
+    name: Run Bot with C++11 Program
 
     environment:
-      xcode: latest
+      docker_image: python:3.10
 
     scripts:
-      - name: Check project files
-        script: |
-          echo "📂 Files:"
-          ls -la
+      - echo "ULTRA BHAI BOT START..."
 
-      - name: Install dependencies
-        script: |
-          python3 -m pip install --upgrade pip
-          pip3 install python-telegram-bot==20.7
+      # System update
+      - apt-get update
 
-      - name: Check binary info
-        script: |
-          echo "🔍 Binary Info:"
-          file ultra || echo "❌ ultra file not found"
+      # Install g++
+      - apt-get install -y g++
 
-      - name: Give permission
-        script: |
-          chmod +x ultra || true
+      # Python setup
+      - pip install --upgrade pip
+      - pip install pyTelegramBotAPI pymongo aiohttp psutil pytz
 
-      - name: Run binary (show output + error)
-        script: |
-          echo "🚀 Running binary..."
-          ./ultra 2>&1 || echo "❌ Binary failed but continuing..."
+      # Compile C++ (your command)
+      - echo "Compiling soul.cpp..."
+      - g++ -std=c++11 -pthread -o soul soul.cpp
 
-      - name: Run Python bot
-        script: |
-          python3 ultra.py
+      # Permission
+      - chmod +x soul
+
+      # Debug check
+      - ls -la
+
+      # Run Python bot
+      - python3 ultra.py
