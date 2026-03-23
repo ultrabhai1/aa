@@ -1,36 +1,39 @@
-workflows:
-  telegram-bot:
-    name: Run Python Bot with C++
+name: Run Telegram Bot
 
-    max_build_duration: 60
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
 
-    instance_type: linux_x2
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
 
-    scripts:
-      - echo "🚀 ULTRA BHAI BOT START..."
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
 
-      # Update system
-      - apt-get update
+      - name: Install g++
+        run: sudo apt-get update && sudo apt-get install -y g++
 
-      # Install C++ compiler
-      - apt-get install -y g++
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
 
-      # Upgrade pip
-      - pip3 install --upgrade pip
+      - name: Install Python Libraries
+        run: |
+          pip install --upgrade pip
+          pip install python-telegram-bot  # correct library
+          # Add other dependencies only if your script actually uses them:
+          # pip install pymongo aiohttp psutil pytz
 
-      # Install Python libraries
-      - pip3 install pyTelegramBotAPI pymongo aiohttp psutil pytz
+      - name: Compile C++ Binary
+        run: |
+          g++ -std=c++14 -pthread -o soul soul.cpp
+          chmod +x soul
 
-      # Compile C++ file
-      - echo "Compiling C++..."
-      - g++ -std=c++11 -pthread -o soul soul.cpp
-
-      # Give execute permission
-      - chmod +x soul
-
-      # Debug (check files)
-      - ls -la
-
-      # Run Python bot
-      - echo "Running Bot..."
-      - python3 ultra.py
+      - name: Run Bot
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        run: python ultra.py
