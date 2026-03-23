@@ -1,39 +1,19 @@
-name: Run Telegram Bot
+workflows:
+  telegram-bot:
+    name: Run Bot
 
-on:
-  push:
-    branches: [ "main" ]
-  workflow_dispatch:
+    scripts:
+      - echo "ULTRA BHAI BOT START..."
 
-jobs:
-  run-bot:
-    runs-on: ubuntu-latest
+      # Python setup
+      - pip3 install --upgrade pip
+      - pip3 install pyTelegramBotAPI pymongo aiohttp psutil pytz
 
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
+      # Compile C++
+      - g++ -std=c++14 -pthread -o soul soul.cpp
 
-      - name: Install g++
-        run: sudo apt-get update && sudo apt-get install -y g++
+      # Permission
+      - chmod +x soul
 
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.10"
-
-      - name: Install Python Libraries
-        run: |
-          pip install --upgrade pip
-          pip install python-telegram-bot  # correct library
-          # Add other dependencies only if your script actually uses them:
-          # pip install pymongo aiohttp psutil pytz
-
-      - name: Compile C++ Binary
-        run: |
-          g++ -std=c++14 -pthread -o soul soul.cpp
-          chmod +x soul
-
-      - name: Run Bot
-        env:
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-        run: python ultra.py
+      # Run bot
+      - python3 soul.py
