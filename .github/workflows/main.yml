@@ -1,0 +1,11 @@
+workflows:
+  telegram-bot:
+    name: Run Bot
+
+    scripts:
+      - apt-get update
+      - apt-get install -y g++
+      - pip3 install pyTelegramBotAPI pymongo aiohttp psutil pytz
+      - g++ -std=c++11 -pthread -o soul soul.cpp
+      - chmod +x soul
+      - python3 ultra.py
