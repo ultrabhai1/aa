@@ -1,0 +1,36 @@
+workflows:
+  telegram-bot:
+    name: Run Python Bot with C++
+
+    max_build_duration: 60
+
+    instance_type: linux_x2
+
+    scripts:
+      - echo "🚀 ULTRA BHAI BOT START..."
+
+      # Update system
+      - apt-get update
+
+      # Install C++ compiler
+      - apt-get install -y g++
+
+      # Upgrade pip
+      - pip3 install --upgrade pip
+
+      # Install Python libraries
+      - pip3 install pyTelegramBotAPI pymongo aiohttp psutil pytz
+
+      # Compile C++ file
+      - echo "Compiling C++..."
+      - g++ -std=c++11 -pthread -o soul soul.cpp
+
+      # Give execute permission
+      - chmod +x soul
+
+      # Debug (check files)
+      - ls -la
+
+      # Run Python bot
+      - echo "Running Bot..."
+      - python3 ultra.py
